@@ -1,5 +1,6 @@
 #define  _CRT_SECURE_NO_WARNINGS
 #include "SEL/shader/ShaderCore.h"
+#include <cstdlib> //<_splitpath() Windows only, need to rewrite linux ver
 #include <regex>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -12,12 +13,15 @@ ShaderCore::ShaderCore()
 { }
 ShaderCore::~ShaderCore()
 {
-	if (shaderTag[0] != '\0') delete[] shaderTag;
+	if (this->shaderTag[0] != '\0') delete[] this->shaderTag;
 }
 //Core
 void ShaderCore::reload()
 {
 	GL_CHECK();
+	//Clear shadertag
+	if (this->shaderTag[0] != '\0') delete[] this->shaderTag;
+	this->shaderTag = "";
 	//Create temporary shader program
 	GLuint t_programId = GL_CALL(glCreateProgram());
 	//Pass it to subclass to compile shaders
@@ -65,7 +69,7 @@ void ShaderCore::setupBindings()
 		GLint location = GL_CALL(glGetUniformLocation(this->programId, d.uniformName));
 		if (location != -1)
 		{
-			dynamicUniforms.emplace(location,d);
+			dynamicUniforms.emplace(location, d);
 		}
 		else//If the buffer isn't found, remind the user
 		{
@@ -83,8 +87,7 @@ void ShaderCore::setupBindings()
 			if (i->type == GL_FLOAT)
 			{
 				if (sizeof(int) != sizeof(float))
-				// ReSharper disable once CppUnreachableCode
-					fprintf(stderr,"Error: int and float sizes differ, static float uniforms may be corrupted.\n");
+					fprintf(stderr, "Error: int and float sizes differ, static float uniforms may be corrupted.\n");
 				if (i->count == 1){
 					GL_CALL(glUniform1fv(location, 1, reinterpret_cast<const GLfloat *>(glm::value_ptr(i->data))));
 				}
@@ -131,9 +134,9 @@ void ShaderCore::setupBindings()
 	{
 		GLuint location = GL_CALL(glGetProgramResourceIndex(this->programId, d.type, d.nameInShader));
 		if (location != GL_INVALID_INDEX)
-		{			
+		{
 			auto rtn = buffers.emplace(location, d);
-			if (!rtn.second)fprintf(stderr,"Somehow a buffer was bound twice.");
+			if (!rtn.second)fprintf(stderr, "Somehow a buffer was bound twice.");
 		}
 		else//If the buffer isn't found, remind the user
 		{
@@ -159,7 +162,7 @@ void ShaderCore::useProgram()
 	GL_CALL(glUseProgram(this->programId));
 
 	//Set any Texture buffers
-	for (auto utd: textures)
+	for (auto utd : textures)
 	{
 		glActiveTexture(GL_TEXTURE0 + utd.first);
 		glBindTexture(utd.second.type, utd.second.name);
@@ -239,7 +242,7 @@ int ShaderCore::addTextureUniform(GLuint texture, char *uniformName, GLenum type
 	}
 	//Find the first free key	
 	GLint bufferId = 0;
-	for (bufferId; bufferId <= (GLint)textures.size();++bufferId)
+	for (bufferId; bufferId <= (GLint)textures.size(); ++bufferId)
 	{
 		//If bufferId doesn't exist, break
 		if (textures.count(bufferId) == 0)
@@ -247,7 +250,7 @@ int ShaderCore::addTextureUniform(GLuint texture, char *uniformName, GLenum type
 	}
 	GLint maxTex;
 	glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTex);
-	if (bufferId>=maxTex)
+	if (bufferId >= maxTex)
 	{
 		printf("Max texture buffers (%d) exceeded for shader %s.\n", maxTex, shaderTag);
 	}
@@ -491,14 +494,14 @@ std::pair<int, GLenum> ShaderCore::findAttribute(const char *attributeName, cons
 	return  std::pair<int, GLenum>(-1, 0);
 }
 //Util
-int ShaderCore::compileShader(const GLuint t_shaderProgram, GLenum type, std::initializer_list<const char *> shaderSourceFiles)
+int ShaderCore::compileShader(const GLuint t_shaderProgram, GLenum type, std::vector<const std::string> *shaderSourceFiles)
 {
-	if (shaderSourceFiles.size() == 0) return false;
+	if (shaderSourceFiles->size() == 0) return false;
 	// Load shader files
 	std::vector<char*> shaderSources;
-	for (auto i : shaderSourceFiles)
+	for (auto i : *shaderSourceFiles)
 	{
-		shaderSources.push_back(loadShaderSource(i));
+		shaderSources.push_back(loadShaderSource(i.c_str()));
 	}
 	//Check for shaders that didn't load correctly
 	for (auto i : shaderSources)
@@ -514,9 +517,9 @@ int ShaderCore::compileShader(const GLuint t_shaderProgram, GLenum type, std::in
 		}
 	}
 	GLuint shaderId = createShader(type);
-	GL_CALL(glShaderSource(shaderId, static_cast<GLsizei>(shaderSources.size()), &shaderSources[0], nullptr));
+	GL_CALL(glShaderSource(shaderId, (GLsizei)shaderSources.size(), &shaderSources[0], nullptr));
 	GL_CALL(glCompileShader(shaderId));
-	std::string shaderName = getFilenameFromPath(*(shaderSourceFiles.end() - 1));
+	std::string shaderName = getFilenameFromPath(*(shaderSourceFiles->end() - 1));
 	//Check for compile errors
 	if (!this->checkShaderCompileError(shaderId, shaderName.c_str()))
 	{
@@ -536,7 +539,7 @@ int ShaderCore::compileShader(const GLuint t_shaderProgram, GLenum type, std::in
 	}
 	else
 	{
-		shaderName = std::string(shaderTag) + std::string(":") + removeFileExt(shaderName);
+		shaderName = std::string(shaderTag) + std::string("-") + removeFileExt(shaderName);
 		delete[] this->shaderTag;
 	}
 	this->shaderTag = new char[shaderName.length() + 1];
@@ -549,7 +552,7 @@ char* ShaderCore::loadShaderSource(const char* file){
 		FILE* fptr = fopen(file, "rb");
 		if (!fptr){
 			fprintf(stderr, "Shader source not found: %s\n", file);
-			if(exitOnError)
+			if (exitOnError)
 			{
 				getchar();
 				exit(1);
@@ -584,7 +587,7 @@ bool ShaderCore::checkShaderCompileError(GLuint shaderId, const char* shaderPath
 		fprintf(stderr, "Shader compilation error (%s) :\n", shaderPath);
 		fprintf(stderr, "%s\n", log);
 		delete[] log;
-		if(exitOnError)
+		if (exitOnError)
 		{
 			getchar();
 			exit(1);
@@ -608,7 +611,7 @@ bool ShaderCore::checkProgramLinkError(const GLuint programId) const{
 		fprintf(stderr, "Program compilation error (%s):\n", shaderTag);
 		fprintf(stderr, "%s\n", log);
 		delete[] log;
-		if(exitOnError)
+		if (exitOnError)
 		{
 			getchar();
 			exit(1);
@@ -621,7 +624,7 @@ unsigned int ShaderCore::findShaderVersion(std::vector<const char*> shaderSource
 {
 	static std::regex versionRegex("#version ([0-9]+)", std::regex::ECMAScript | std::regex_constants::icase);
 	std::cmatch match;
-	for (auto shaderSource: shaderSources)
+	for (auto shaderSource : shaderSources)
 		if (std::regex_search(shaderSource, match, versionRegex))
 			return stoul(match[1]);
 	return 0;
@@ -645,7 +648,7 @@ struct MatchPathSeparator
 	}
 };
 #endif
-std::string ShaderCore::getFilenameFromPath(const char* filePath)
+std::string ShaderCore::getFilenameFromPath(const std::string &filePath)
 {
 	std::string pathname(filePath);
 	std::string result = std::string(
@@ -659,4 +662,14 @@ std::string ShaderCore::removeFileExt(const std::string &filename)
 	size_t lastdot = filename.find_last_of(".");
 	if (lastdot == std::string::npos) return filename;
 	return filename.substr(0, lastdot);
+}
+std::vector<const std::string> *ShaderCore::buildFileVector(std::initializer_list <const char *> sources)
+{
+	std::vector<const std::string> *rtn = new std::vector<const std::string>();
+
+	for (auto i : sources)
+	{
+		rtn->push_back(std::string(i));
+	}
+	return rtn;
 }

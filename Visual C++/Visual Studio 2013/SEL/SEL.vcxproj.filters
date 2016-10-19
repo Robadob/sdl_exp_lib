@@ -27,30 +27,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\SEL\shader\Shaders.h">
+    <ClInclude Include="..\..\..\include\SEL\shader\Shaders.h">
       <Filter>Header Files\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\SEL\shader\ComputeShader.h">
+    <ClInclude Include="..\..\..\include\SEL\shader\ShaderCore.h">
       <Filter>Header Files\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\SEL\shader\ShaderCore.h">
+    <ClInclude Include="..\..\..\include\SEL\shader\ComputeShader.h">
       <Filter>Header Files\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\SEL\interface\Reloadable.h">
-      <Filter>Header Files\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\SEL\util\GLCheck.h">
+    <ClInclude Include="..\..\..\include\SEL\util\GLCheck.h">
       <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\SEL\interface\Reloadable.h">
+      <Filter>Header Files\Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\SEL\shader\ComputeShader.cpp">
+    <ClCompile Include="..\..\..\src\SEL\shader\ComputeShader.cpp">
       <Filter>Source Files\Shader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\SEL\shader\ShaderCore.cpp">
+    <ClCompile Include="..\..\..\src\SEL\shader\ShaderCore.cpp">
       <Filter>Source Files\Shader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\SEL\shader\Shaders.cpp">
+    <ClCompile Include="..\..\..\src\SEL\shader\Shaders.cpp">
       <Filter>Source Files\Shader</Filter>
     </ClCompile>
   </ItemGroup>

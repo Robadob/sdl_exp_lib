@@ -6,13 +6,18 @@ ComputeShader::ComputeShader(const char *path, glm::uvec3 defaultLaunchConfig)
 ComputeShader::ComputeShader(std::initializer_list<const char *> paths, glm::uvec3 defaultLaunchConfig)
 	: ShaderCore()
 	, lastLaunchConfig(defaultLaunchConfig)
-	, shaderFilePaths(paths)
+	, shaderFilePaths(buildFileVector(paths))
 {
 	reload();
 }
+ComputeShader::~ComputeShader()
+{
+	this->destroyProgram();
+	delete shaderFilePaths;
+}
 void ComputeShader::launch()
 {
-	if (lastLaunchConfig!= glm::uvec3(0)
+	if (lastLaunchConfig != glm::uvec3(0)
 		&& this->getProgram()>0)
 	{
 		//Setup shader
@@ -41,5 +46,5 @@ unsigned int ComputeShader::getMaxThreadsPerWorkGroup()
 }
 bool ComputeShader::_compileShaders(const GLuint t_shaderProgram)
 {
-	return this->compileShader(t_shaderProgram, GL_COMPUTE_SHADER, shaderFilePaths)>=0;
+	return this->compileShader(t_shaderProgram, GL_COMPUTE_SHADER, shaderFilePaths) >= 0;
 }

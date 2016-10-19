@@ -83,13 +83,13 @@
     <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);;$(ProjectDir)../../bin/$(Platform)/</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)../../include;</IncludePath>
-    <SourcePath>$(VC_SourcePath);;$(ProjectDir)../../src</SourcePath>
-    <OutDir>$(ProjectDir)..\..\lib\$(Platform)\</OutDir>
-    <IntDir>$(ProjectDir)..\..\bin\$(Platform)\$(Configuration)\temp\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)../../../include;</IncludePath>
+    <SourcePath>$(VC_SourcePath);;$(ProjectDir)../../../src</SourcePath>
+    <OutDir>$(ProjectDir)..\..\..\lib\$(Platform)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\bin\$(Platform)\$(Configuration)\temp\</IntDir>
     <TargetName>$(ProjectName)d</TargetName>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(ProjectDir)../../lib/$(Platform)/;</LibraryPath>
-    <ExecutablePath>$(VC_ExecutablePath_x64);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);$(ProjectDir)../../bin/$(Platform)/;</ExecutablePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(ProjectDir)../../../lib/$(Platform)/;</LibraryPath>
+    <ExecutablePath>$(VC_ExecutablePath_x64);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);$(ProjectDir)../../../bin/$(Platform)/;</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)../../include;</IncludePath>
@@ -168,16 +168,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\SEL\interface\Reloadable.h" />
-    <ClInclude Include="..\..\include\SEL\shader\ComputeShader.h" />
-    <ClInclude Include="..\..\include\SEL\shader\ShaderCore.h" />
-    <ClInclude Include="..\..\include\SEL\shader\Shaders.h" />
-    <ClInclude Include="..\..\include\SEL\util\GLCheck.h" />
+    <ClInclude Include="..\..\..\include\SEL\shader\Shaders.h" />
+    <ClInclude Include="..\..\..\include\SEL\interface\Reloadable.h" />
+    <ClInclude Include="..\..\..\include\SEL\shader\ComputeShader.h" />
+    <ClInclude Include="..\..\..\include\SEL\shader\ShaderCore.h" />
+    <ClInclude Include="..\..\..\include\SEL\util\GLCheck.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\SEL\shader\ComputeShader.cpp" />
-    <ClCompile Include="..\..\src\SEL\shader\ShaderCore.cpp" />
-    <ClCompile Include="..\..\src\SEL\shader\Shaders.cpp" />
+    <ClCompile Include="..\..\..\src\SEL\shader\ComputeShader.cpp" />
+    <ClCompile Include="..\..\..\src\SEL\shader\ShaderCore.cpp" />
+    <ClCompile Include="..\..\..\src\SEL\shader\Shaders.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
